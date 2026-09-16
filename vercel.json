@@ -7,8 +7,8 @@
       "config": { "maxLambdaSize": "50mb" }
     }
   ],
-  "routes": [
-    { "src": "/(.*)", "dest": "api/index.py" }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index" }
   ],
   "functions": {
     "api/index.py": {
