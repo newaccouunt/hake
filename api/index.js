@@ -5,20 +5,20 @@
 
 const BASE_API = "https://numinfotitan.vercel.app/search?key=TITANKENG&num=";
 
-// ---------- Helper: CORS ----------
+// ---------- CORS ----------
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
-// ---------- Helper: Fetch TITAN ----------
-async function fetchTitan(fullNumber) {
-  const r = await fetch(BASE_API + fullNumber);
+// ---------- Fetch TITAN ----------
+async function fetchTitan(number) {
+  const r = await fetch(BASE_API + number);
   return await r.json();
 }
 
-// ---------- Helper: Brand wrapper ----------
+// ---------- Brand wrapper ----------
 function brand(obj) {
   return {
     brand: "BRONX",
@@ -49,16 +49,12 @@ export default async function handler(req, res) {
       );
     }
 
-    const fullNumber = "91" + num;
-
     try {
-      const data = await fetchTitan(fullNumber);
+      const data = await fetchTitan(num); // ✅ No 91 prefix
 
       const results = (data.results || []).map(item => {
-        // aadharNumber ko hata do
         const { aadharNumber, ...rest } = item;
 
-        // connected_numbers se bhi aadhar remove karo
         if (rest.connected_numbers) {
           rest.connected_numbers = rest.connected_numbers.filter(
             c => c.field !== "aadharNumber"
@@ -85,7 +81,7 @@ export default async function handler(req, res) {
 
   // =========================================
   // ROUTE 2: /adhar?adhar=XXXXXXXXXX
-  // ONLY aadharNumber SHOW — baaki SAB HIDE
+  // ONLY aadharNumber SHOW
   // =========================================
   if (pathname.includes("adhar")) {
     const adhar = searchParams.get("adhar");
@@ -96,10 +92,8 @@ export default async function handler(req, res) {
       );
     }
 
-    const fullNumber = "91" + adhar;
-
     try {
-      const data = await fetchTitan(fullNumber);
+      const data = await fetchTitan(adhar); // ✅ No 91 prefix
 
       const list = (data.results || [])
         .map(item => item.aadharNumber)
